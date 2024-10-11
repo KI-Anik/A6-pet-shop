@@ -23,5 +23,7 @@
 }
 
 .active{
-    background-color: green;
+    background-color: rgb(181, 241, 221);
+    border-color: rgb(45, 230, 168);
+    border-width: 2px;
 }

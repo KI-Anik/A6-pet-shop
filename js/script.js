@@ -1,14 +1,35 @@
+// scrolling to the section
+document.getElementById('scrollButton').addEventListener('click', function() {
+    document.getElementById('adopt').scrollIntoView({
+        behavior: 'smooth'
+    });
+});
+
+let allpets = []; // Define globally to be used in sorting
+
+// Sort by Price functionality
+document.getElementById('sortByPrice').addEventListener('click', () => {
+   const sortedPets = allpets.sort((a, b) => b.price - a.price); // Sort ascending by price
+   console.log(sortedPets)
+   displayCard(sortedPets); // Re-render the sorted cards
+});
+
+// ** Function to check for undefined or null values and return "Not Available" **
+const checkValue = (value) => {
+    return (value === undefined || value === null) ? 'Not Available' : value;
+};
+
 const loadCategories = async () => {
     const response = await fetch('https://openapi.programming-hero.com/api/peddy/categories');
     const data = await response.json()
-    // console.log(data)
     displayCategories(data.categories)
 };
 
 const loadCard = async () => {
     const response = await fetch('https://openapi.programming-hero.com/api/peddy/pets');
-    const data = await response.json()
-    displayCard(data.pets)
+    const data = await response.json();
+    allpets = data.pets; // Assign data to global variable
+    displayCard(allpets);
 };
 
 const removeActiveclass = () => {
@@ -16,7 +37,7 @@ const removeActiveclass = () => {
     for (const btn of buttons) {
         btn.classList.remove('active')
     }
-}
+};
 
 const loadCategoriesPhotos = async (categoryName) => {
     const res = await fetch(`https://openapi.programming-hero.com/api/peddy/category/${categoryName}`);
@@ -31,15 +52,8 @@ const loadCategoriesPhotos = async (categoryName) => {
     activeBtn.classList.add('active')
 }
 
-// const displayCategoriesPhotos = (photos) => {
-//     displayCard(photos.data)
-
-// }
-
 const displayCategories = (categories) => {
-    // console.log(categories)
     categories.forEach(item => {
-        // console.log(item.category)
 
         // create button 
         const buttonContainer = document.createElement('div');
@@ -48,10 +62,9 @@ const displayCategories = (categories) => {
              <img class = "w-1/4" src = ${item.category_icon}
                 <span> ${item.category} <span>
             </button>
-        `
-
+        `;
         // add button 
-        const categoriesContainer = document.getElementById('categoryName');
+        const categoriesContainer = document.getElementById('choosePetsCategory');
         categoriesContainer.append(buttonContainer)
     });
 };
@@ -72,9 +85,9 @@ const displayDetails = (modal) => {
     <h2 class="text-2xl font-bold">${modal.pet_name}</h2>
     <div class="grid grid-cols-2 border-b gap-3">
     <p><i class="fa-solid fa-border-all"></i> Breed: ${modal.breed}</p>
-    <p><i class="fa-regular fa-calendar"></i> Birth: ${modal.date_of_birth}</p>
-    <p><i class="fa-solid fa-mercury"></i>  Gender: ${modal.gender}</p>
-    <p><i class="fa-solid fa-dollar-sign"></i> Price: ${modal.price}</p>
+    <p><i class="fa-regular fa-calendar"></i> Birth: ${checkValue(modal.date_of_birth)}</p>
+    <p><i class="fa-solid fa-mercury"></i>  Gender: ${checkValue(modal.gender)}</p>
+    <p><i class="fa-solid fa-dollar-sign"></i> Price: ${checkValue(modal.price)}</p>
     <p><i class="fa-solid fa-mercury mb-4"></i> vaccinated status:${modal.vaccinated_status} </p>
     </div>
     <div>
@@ -87,23 +100,8 @@ const displayDetails = (modal) => {
 }
 
 
-/**
-{
-    "petId": 1,
-    "breed": "Golden Retriever",
-    "category": "Dog",
-    "date_of_birth": "2023-01-15",
-    "price": 1200,
-    "image": "https://i.ibb.co.com/p0w744T/pet-1.jpg",
-    "gender": "Male",
-    "pet_details": "This friendly male Golden Retriever is energetic and loyal, making him a perfect companion for families. Born on January 15, 2023, he enjoys playing outdoors and is especially great with children. Fully vaccinated, he's ready to join your family and bring endless joy. Priced at $1200, he offers love, loyalty, and a lively spirit for those seeking a playful yet gentle dog.",
-    "vaccinated_status": "Fully",
-    "pet_name": "Sunny"
-}
- */
-
 const displayCard = (cards) => {
-    // console.log(cards)
+    console.log(cards)
     const cardContainer = document.getElementById('cards')
     cardContainer.innerHTML = "";
 
@@ -124,9 +122,8 @@ const displayCard = (cards) => {
     }
 
     cards.forEach(card => {
-        console.log(card.petId)
-        const Newcard = document.createElement('div');
-        Newcard.innerHTML = `
+        const newCard = document.createElement('div');
+        newCard.innerHTML = `
         <div class=" card card-compact bg-base-100 shadow-xl ">
      <div class = "flex justify-center h-[250px]" ><img class = "w-4/5 rounded-2xl" src=${card.image} alt=""></div>
 
@@ -134,20 +131,31 @@ const displayCard = (cards) => {
     <h2 class="card-title">${card.pet_name}</h2>
     <div class="border-b space-y-3">
     <p><i class="fa-solid fa-border-all"></i> Breed: ${card.breed}</p>
-    <p><i class="fa-regular fa-calendar"></i> Birth: ${card.date_of_birth}</p>
-    <p><i class="fa-solid fa-mercury"></i>  Gender: ${card.gender}</p>
-    <p><i class="fa-solid fa-dollar-sign mb-4"></i> Price: ${card.price}</p>
+    <p><i class="fa-regular fa-calendar"></i> Birth: ${checkValue(card.date_of_birth)}</p>
+    <p><i class="fa-solid fa-mercury"></i>  Gender: ${checkValue(card.gender)}</p>
+    <p><i class="fa-solid fa-dollar-sign mb-4"></i> Price: ${checkValue(card.price)}</p>
     </div>
     <div class = "flex justify-around">
-    <button class="btn"><i class="fa-regular fa-thumbs-up"></i></button>
+    <button onclick = "likedPhotosDisplay('${card.image}')"
+class="btn"><i class="fa-regular fa-thumbs-up"></i></button>
     <button class="btn">Adopt</button>
     <button onclick = "loadDetails(${card.petId})" class="btn">Details</button>
     </div>
   </div>
 </div>
         `
-        cardContainer.append(Newcard)
+        cardContainer.append(newCard)
     });
+}
+
+const likedPhotosDisplay = (image) => {
+    console.log(image)
+    const likedPhotosContainer = document.getElementById('likedPhotos-Container');
+    const div = document.createElement('div');
+    div.innerHTML = `
+    <img src=${image} alt="">
+    `
+    likedPhotosContainer.append(div)
 }
 
 loadCategories()
