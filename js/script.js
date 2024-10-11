@@ -7,14 +7,13 @@ document.getElementById('scrollButton').addEventListener('click', function() {
 
 let allpets = []; // Define globally to be used in sorting
 
-// Sort by Price functionality
 document.getElementById('sortByPrice').addEventListener('click', () => {
-   const sortedPets = allpets.sort((a, b) => b.price - a.price); // Sort ascending by price
+   const sortedPets = allpets.sort((a, b) => b.price - a.price); 
    console.log(sortedPets)
-   displayCard(sortedPets); // Re-render the sorted cards
+   displayCard(sortedPets); 
 });
 
-// ** Function to check for undefined or null values and return "Not Available" **
+
 const checkValue = (value) => {
     return (value === undefined || value === null) ? 'Not Available' : value;
 };
@@ -40,17 +39,39 @@ const removeActiveclass = () => {
 };
 
 const loadCategoriesPhotos = async (categoryName) => {
-    const res = await fetch(`https://openapi.programming-hero.com/api/peddy/category/${categoryName}`);
-    const data = await res.json();
-    displayCard(data.data)
+    const spinner = document.getElementById('spinner');
+    const cardContainer = document.getElementById('cards');
 
-    // remove color on button
-    removeActiveclass()
-   
-    // active color on button
-    const activeBtn = document.getElementById(`btn-${categoryName}`)
-    activeBtn.classList.add('active')
-}
+    // Hide cards and show spinner before fetching data
+    cardContainer.classList.add('hidden');
+    spinner.classList.remove('hidden');
+
+    try {
+        const res = await fetch(`https://openapi.programming-hero.com/api/peddy/category/${categoryName}`);
+        const data = await res.json();
+
+        setTimeout(() => {
+            // Hide the spinner and display the fetched cards
+            spinner.classList.add('hidden');
+            cardContainer.classList.remove('hidden');
+            displayCard(data.data); 
+        }, 2000); 
+    } catch (error) {
+        console.error('Error fetching category data:', error);
+        // Hide the spinner even if there is an error
+        spinner.classList.add('hidden');
+        cardContainer.classList.remove('hidden');
+    }
+};
+
+document.getElementById('choosePetsCategory').addEventListener('click', () => {
+    // Hide all cards and show spinner when clicking a category button
+    const spinner = document.getElementById('spinner');
+    const cardContainer = document.getElementById('cards');
+    
+    cardContainer.classList.add('hidden');
+    spinner.classList.remove('hidden');
+});
 
 const displayCategories = (categories) => {
     categories.forEach(item => {
@@ -84,7 +105,7 @@ const displayDetails = (modal) => {
      <div class="card-body">
     <h2 class="text-2xl font-bold">${modal.pet_name}</h2>
     <div class="grid grid-cols-2 border-b gap-3">
-    <p><i class="fa-solid fa-border-all"></i> Breed: ${modal.breed}</p>
+    <p><i class="fa-solid fa-border-all"></i> Breed: ${checkValue(modal.breed)}</p>
     <p><i class="fa-regular fa-calendar"></i> Birth: ${checkValue(modal.date_of_birth)}</p>
     <p><i class="fa-solid fa-mercury"></i>  Gender: ${checkValue(modal.gender)}</p>
     <p><i class="fa-solid fa-dollar-sign"></i> Price: ${checkValue(modal.price)}</p>
@@ -98,7 +119,6 @@ const displayDetails = (modal) => {
 
     document.getElementById('my_modal_5').showModal()
 }
-
 
 const displayCard = (cards) => {
     console.log(cards)
@@ -130,16 +150,16 @@ const displayCard = (cards) => {
   <div class="card-body">
     <h2 class="card-title">${card.pet_name}</h2>
     <div class="border-b space-y-3">
-    <p><i class="fa-solid fa-border-all"></i> Breed: ${card.breed}</p>
+    <p><i class="fa-solid fa-border-all"></i> Breed: ${checkValue(card.breed)}</p>
     <p><i class="fa-regular fa-calendar"></i> Birth: ${checkValue(card.date_of_birth)}</p>
     <p><i class="fa-solid fa-mercury"></i>  Gender: ${checkValue(card.gender)}</p>
     <p><i class="fa-solid fa-dollar-sign mb-4"></i> Price: ${checkValue(card.price)}</p>
     </div>
     <div class = "flex justify-around">
     <button onclick = "likedPhotosDisplay('${card.image}')"
-class="btn"><i class="fa-regular fa-thumbs-up"></i></button>
-    <button class="btn">Adopt</button>
-    <button onclick = "loadDetails(${card.petId})" class="btn">Details</button>
+class="btn btn-outline btn-success"><i class="fa-regular fa-thumbs-up"></i></button>
+    <button class="btn btn-outline btn-success">Adopt</button>
+    <button onclick = "loadDetails(${card.petId})" class="btn btn-outline btn-success">Details</button>
     </div>
   </div>
 </div>
