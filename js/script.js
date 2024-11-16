@@ -158,7 +158,7 @@ const displayCard = (cards) => {
     <div class = "flex justify-around">
     <button onclick = "likedPhotosDisplay('${card.image}')"
 class="btn btn-outline btn-success"><i class="fa-regular fa-thumbs-up"></i></button>
-    <button class="btn btn-outline btn-success">Adopt</button>
+    <button onclick="showCongratsModal()" class="btn btn-outline btn-success">Adopt</button>
     <button onclick = "loadDetails(${card.petId})" class="btn btn-outline btn-success">Details</button>
     </div>
   </div>
@@ -177,6 +177,29 @@ const likedPhotosDisplay = (image) => {
     `
     likedPhotosContainer.append(div)
 }
+
+ // Function to show the congrats modal and countdown
+ const showCongratsModal = () => {
+    const modal = document.getElementById('congrats_modal');
+    const countdownElement = document.getElementById('countdown');
+    let countdown = 3;
+
+    // Open the modal
+    modal.showModal();
+    countdownElement.textContent = `Closing in ${countdown}...`;
+
+    // Countdown logic
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownElement.textContent = `Closing in ${countdown}...`;
+
+        // Close modal when countdown reaches 0
+        if (countdown === 0) {
+            clearInterval(countdownInterval);
+            modal.close();
+        }
+    }, 1000); // Update every second (1000ms)
+};
 
 loadCategories()
 loadCard()

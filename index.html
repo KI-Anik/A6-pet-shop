@@ -93,7 +93,7 @@
             </div>
         </section>
 
-        <!-- Open the modal using ID.showModal() method -->
+        <!-- modal  -->
         <button class="btn hidden" onclick="my_modal_5.showModal()">open modal</button>
 
         <dialog id="my_modal_5" class="modal modal-bottom sm:modal-middle">
@@ -110,6 +110,14 @@
             </div>
         </dialog>
 
+         <!-- Congrats Modal -->
+         <dialog id="congrats_modal" class="modal modal-bottom sm:modal-middle">
+            <div class="modal-box text-center">
+                <h2 class="text-3xl font-bold text-green-600">🎉 Congratulations! 🎉</h2>
+                <p>You have adopted a pet!</p>
+                <p id="countdown" class="text-xl mt-4 font-bold text-red-600"></p>
+            </div>
+        </dialog>
     </main>
 
     <footer class="footer sm:flex justify-between bg-base-200 text-base-content p-32 mt-8">
